@@ -1,0 +1,30 @@
+TEST
+test123@test.com
+test
+
+ORGANIZADOR
+testorg@test.com
+test
+
+USER
+user123@gmail.com
+test
+
+comandos incio:
+
+1 ARRANCAR BACK
+cd backend
+. venv/bin/activate
+export DATABASE_URL=mysql+pymysql://eventuser:eventpass123@localhost:3306/eventapp
+export SECRET_KEY=clave_super_secreta_123
+export ALGORITHM=HS256
+uvicorn main:app --reload
+
+2 ARRANCAR FRONT
+cd frontend
+npm run dev
+
+3 CHEQUEAR FUNCIONAMIENTO SQL
+sudo systemctl start mysql
+
+1,2 y 3 en terminales distintas
