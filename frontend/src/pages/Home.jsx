@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import SideMenu from '../components/SideMenu'
 import api from '../services/api'
 
 export default function Home() {
   const [events, setEvents] = useState([])
-  const [showConfirm, setShowConfirm] = useState(false)
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     api.get('/events/').then(res => setEvents(res.data))
@@ -15,47 +15,33 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-
-      {showConfirm && (
-        <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.7)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:9999}}>
-          <div style={{background:'#111827', borderRadius:'16px', padding:'32px', maxWidth:'380px', width:'100%', margin:'0 16px'}}>
-            <h2 style={{color:'white', fontSize:'20px', fontWeight:'bold', marginBottom:'8px'}}>Cerrar sesión</h2>
-            <p style={{color:'#9ca3af', marginBottom:'24px'}}>¿Seguro que querés cerrar sesión?</p>
-            <div style={{display:'flex', gap:'12px'}}>
-              <button
-                onClick={() => setShowConfirm(false)}
-                style={{flex:1, padding:'12px', borderRadius:'8px', border:'1px solid #374151', color:'#d1d5db', background:'transparent', cursor:'pointer'}}>
-                Cancelar
-              </button>
-              <button
-                onClick={() => { setShowConfirm(false); logout(); }}
-                style={{flex:1, padding:'12px', borderRadius:'8px', background:'#dc2626', color:'white', fontWeight:'600', cursor:'pointer', border:'none'}}>
-                Cerrar sesión
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <nav className="bg-gray-900 px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-purple-400">WHARTY</h1>
+        <div className="flex gap-4 items-center">
+          {user && (
+            <button
+              onClick={() => setMenuOpen(true)}
+              style={{
+                width:'38px', height:'38px', borderRadius:'8px',
+                background:'transparent', border:'none', cursor:'pointer',
+                display:'flex', flexDirection:'column', justifyContent:'center',
+                alignItems:'center', gap:'5px', padding:'4px'
+              }}>
+              <span style={{display:'block', width:'22px', height:'2px', background:'#a78bfa', borderRadius:'2px'}}></span>
+              <span style={{display:'block', width:'22px', height:'2px', background:'#a78bfa', borderRadius:'2px'}}></span>
+              <span style={{display:'block', width:'22px', height:'2px', background:'#a78bfa', borderRadius:'2px'}}></span>
+            </button>
+          )}
+          <h1 className="text-xl font-bold text-purple-400">WHARTY</h1>
+        </div>
         <div className="flex gap-4 items-center">
           {user?.isOrganizer && (
             <Link to="/events/create" className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition text-sm font-semibold">
               + Crear evento
             </Link>
           )}
-          {user ? (
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                setShowConfirm(true)
-              }}
-              className="text-gray-400 hover:text-white transition">
-              Cerrar sesión
-            </button>
-          ) : (
+          {!user && (
             <>
               <Link to="/login" className="text-gray-400 hover:text-white transition">Iniciar sesión</Link>
               <Link to="/register" className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition">Registrarse</Link>

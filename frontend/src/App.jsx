@@ -5,6 +5,10 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import EventDetail from './pages/EventDetail'
 import CreateEvent from './pages/CreateEvent'
+import Profile from './pages/Profile'
+import MyTickets from './pages/MyTickets'
+import MyReviews from './pages/MyReviews'
+import MyEvents from './pages/MyEvents'
 
 export default function App() {
   return (
@@ -17,6 +21,10 @@ export default function App() {
           <Route path="/events" element={<Home />} />
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/events/create" element={<CreateEvent />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/my-tickets" element={<MyTickets />} />
+          <Route path="/my-reviews" element={<MyReviews />} />
+          <Route path="/my-events" element={<MyEvents />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
