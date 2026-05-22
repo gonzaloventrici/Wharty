@@ -10,6 +10,7 @@ class EventCreate(BaseModel):
     price: float
     capacity: int
     image_url: Optional[str] = None
+    is_recurring: bool = False
 
 class EventResponse(BaseModel):
     id: int
@@ -23,6 +24,7 @@ class EventResponse(BaseModel):
     average_rating: float
     organizer_id: int
     created_at: datetime
+    is_recurring: bool = False
 
     class Config:
         from_attributes = True

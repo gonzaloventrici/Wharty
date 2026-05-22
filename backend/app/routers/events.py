@@ -7,6 +7,10 @@ from app.schemas.event import EventCreate, EventResponse
 from jose import jwt, JWTError
 from fastapi.security import OAuth2PasswordBearer
 import os
+import shutil
+import uuid
+from fastapi import File, UploadFile
+from pathlib import Path
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -25,6 +29,12 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
 @router.get("/", response_model=list[EventResponse])
 def get_events(db: Session = Depends(get_db)):
     return db.query(Event).all()
+
+@router.get("/my-events", response_model=list[EventResponse])
+def get_my_events(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if not current_user.is_organizer:
+        raise HTTPException(status_code=403, detail="Solo organizadores")
+    return db.query(Event).filter(Event.organizer_id == current_user.id).all()
 
 @router.get("/{event_id}", response_model=EventResponse)
 def get_event(event_id: int, db: Session = Depends(get_db)):
@@ -53,3 +63,99 @@ def delete_event(event_id: int, db: Session = Depends(get_db), current_user: Use
     db.delete(event)
     db.commit()
     return {"message": "Evento eliminado"}
+
+@router.put("/{event_id}", response_model=EventResponse)
+def update_event(event_id: int, data: EventCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    if event.organizer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tenés permiso para editar este evento")
+    for key, value in data.model_dump().items():
+        setattr(event, key, value)
+    db.commit()
+    db.refresh(event)
+    return event
+
+UPLOAD_DIR = Path("uploads")
+UPLOAD_DIR.mkdir(exist_ok=True)
+
+@router.post("/{event_id}/upload-image")
+def upload_image(event_id: int, file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    if event.organizer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tenés permiso")
+    
+    ext = file.filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / filename
+    
+    with open(filepath, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    event.image_url = f"/uploads/{filename}"
+    db.commit()
+    db.refresh(event)
+    return {"image_url": event.image_url}
+
+from app.models.event_image import EventImage
+from app.schemas.event_image import EventImageResponse
+
+@router.get("/{event_id}/images", response_model=list[EventImageResponse])
+def get_event_images(event_id: int, db: Session = Depends(get_db)):
+    return db.query(EventImage).filter(EventImage.event_id == event_id).all()
+
+@router.post("/{event_id}/images", response_model=EventImageResponse)
+def upload_event_image(event_id: int, file: UploadFile = File(...), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event:
+        raise HTTPException(status_code=404, detail="Evento no encontrado")
+    if event.organizer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tenés permiso")
+
+    ext = file.filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = UPLOAD_DIR / filename
+    with open(filepath, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    has_primary = db.query(EventImage).filter(EventImage.event_id == event_id, EventImage.is_primary == True).first()
+    new_image = EventImage(
+        event_id=event_id,
+        url=f"/uploads/{filename}",
+        is_primary=not has_primary
+    )
+    db.add(new_image)
+    db.commit()
+    db.refresh(new_image)
+    return new_image
+
+@router.put("/{event_id}/images/{image_id}/set-primary")
+def set_primary_image(event_id: int, image_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event or event.organizer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tenés permiso")
+    db.query(EventImage).filter(EventImage.event_id == event_id).update({"is_primary": False})
+    db.query(EventImage).filter(EventImage.id == image_id).update({"is_primary": True})
+    db.commit()
+    return {"message": "Imagen principal actualizada"}
+
+@router.delete("/{event_id}/images/{image_id}")
+def delete_event_image(event_id: int, image_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    event = db.query(Event).filter(Event.id == event_id).first()
+    if not event or event.organizer_id != current_user.id:
+        raise HTTPException(status_code=403, detail="No tenés permiso")
+    image = db.query(EventImage).filter(EventImage.id == image_id).first()
+    if not image:
+        raise HTTPException(status_code=404, detail="Imagen no encontrada")
+    import os
+    if image.url.startswith('/uploads/'):
+        try:
+            os.remove(image.url[1:])
+        except:
+            pass
+    db.delete(image)
+    db.commit()
+    return {"message": "Imagen eliminada"}

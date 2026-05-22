@@ -11,12 +11,12 @@ export default function EditEvent() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [form, setForm] = useState({
     title: '', description: '', location: '',
-    date: '', price: '', capacity: '', image_url: '', is_recurring: false
+    date: '', price: '', capacity: '', is_recurring: false
   })
-  const [imageFile, setImageFile] = useState(null)
-  const [preview, setPreview] = useState(null)
+  const [images, setImages] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
@@ -30,20 +30,41 @@ export default function EditEvent() {
         date: e.date.slice(0, 16),
         price: e.price,
         capacity: e.capacity,
-        image_url: e.image_url || '',
         is_recurring: e.is_recurring || false
       })
-      if (e.image_url) setPreview(e.image_url.startsWith('http') ? e.image_url : `http://127.0.0.1:8000${e.image_url}`)
       setLoading(false)
     })
+    api.get(`/events/${id}/images`).then(res => setImages(res.data))
   }, [id])
 
-  const handleImageFile = (e) => {
+  const handleUpload = async (e) => {
     const file = e.target.files[0]
-    if (file) {
-      setImageFile(file)
-      setPreview(URL.createObjectURL(file))
+    if (!file) return
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    try {
+      const res = await api.post(`/events/${id}/images`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      setImages([...images, res.data])
+    } catch {
+      setError('Error al subir la imagen')
+    } finally {
+      setUploading(false)
+      e.target.value = ''
     }
+  }
+
+  const handleSetPrimary = async (imageId) => {
+    await api.put(`/events/${id}/images/${imageId}/set-primary`)
+    setImages(images.map(img => ({ ...img, is_primary: img.id === imageId })))
+  }
+
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm('¿Eliminar esta imagen?')) return
+    await api.delete(`/events/${id}/images/${imageId}`)
+    setImages(images.filter(img => img.id !== imageId))
   }
 
   const handleSubmit = async (e) => {
@@ -58,15 +79,6 @@ export default function EditEvent() {
         capacity: parseInt(form.capacity),
         date: new Date(form.date).toISOString()
       })
-
-      if (imageFile) {
-        const formData = new FormData()
-        formData.append('file', imageFile)
-        await api.post(`/events/${id}/upload-image`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-      }
-
       setSuccess('Evento actualizado correctamente')
     } catch {
       setError('Error al actualizar el evento')
@@ -100,37 +112,50 @@ export default function EditEvent() {
         {success && <p className="text-green-400 mb-4">{success}</p>}
         {error && <p className="text-red-400 mb-4">{error}</p>}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* Imágenes */}
+        <div className="bg-gray-900 rounded-2xl p-6 mb-4">
+          <p className="text-white font-semibold mb-4">Imágenes del evento</p>
 
-          {/* Imagen */}
-          <div className="bg-gray-900 rounded-2xl p-6">
-            <p className="text-gray-400 text-sm mb-4 font-semibold">Imagen del evento</p>
-            {preview && (
-              <div className="mb-4 rounded-xl overflow-hidden h-48">
-                <img src={preview} alt="preview" className="w-full h-full object-cover" />
-              </div>
-            )}
-            <div className="flex flex-col gap-3">
-              <div>
-                <label className="text-gray-400 text-sm mb-1 block">Subir imagen desde tu computadora</label>
-                <input type="file" accept="image/*" onChange={handleImageFile}
-                  className="text-gray-300 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer" />
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-px bg-gray-700"></div>
-                <span className="text-gray-500 text-xs">o</span>
-                <div className="flex-1 h-px bg-gray-700"></div>
-              </div>
-              <div>
-                <label className="text-gray-400 text-sm mb-1 block">Pegar URL de imagen</label>
-                <input type="text" placeholder="https://..."
-                  className="bg-gray-800 text-white rounded-lg px-4 py-3 outline-none w-full text-sm"
-                  value={form.image_url}
-                  onChange={e => { setForm({...form, image_url: e.target.value}); setPreview(e.target.value) }} />
-              </div>
+          {images.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {images.map(img => (
+                <div key={img.id} className="relative rounded-xl overflow-hidden">
+                  <img
+                    src={`http://127.0.0.1:8000${img.url}`}
+                    alt="evento"
+                    className="w-full h-24 object-cover"
+                  />
+                  {img.is_primary && (
+                    <span className="absolute top-1 left-1 bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full">Principal</span>
+                  )}
+                  <div className="absolute bottom-0 inset-x-0 bg-black/60 flex justify-between p-1">
+                    {!img.is_primary && (
+                      <button
+                        onClick={() => handleSetPrimary(img.id)}
+                        className="text-xs text-purple-300 hover:text-white">
+                        Principal
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDeleteImage(img.id)}
+                      className="text-xs text-red-400 hover:text-white ml-auto">
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
 
+          <div>
+            <label className="text-gray-400 text-sm mb-2 block">Subir nueva imagen</label>
+            <input type="file" accept="image/*" onChange={handleUpload} disabled={uploading}
+              className="text-gray-300 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer disabled:opacity-50" />
+            {uploading && <p className="text-gray-400 text-sm mt-2">Subiendo...</p>}
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input type="text" placeholder="Nombre del evento" required
             className="bg-gray-900 text-white rounded-lg px-4 py-3 outline-none"
             value={form.title} onChange={e => setForm({...form, title: e.target.value})} />
@@ -156,12 +181,9 @@ export default function EditEvent() {
           </div>
 
           <label className="flex items-center gap-3 bg-gray-900 rounded-lg px-4 py-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.is_recurring}
+            <input type="checkbox" checked={form.is_recurring}
               onChange={e => setForm({...form, is_recurring: e.target.checked})}
-              className="w-4 h-4 accent-purple-600"
-            />
+              className="w-4 h-4 accent-purple-600" />
             <div>
               <div className="text-white text-sm font-semibold">Evento recurrente</div>
               <div className="text-gray-500 text-xs">Este evento se repite ocasionalmente</div>

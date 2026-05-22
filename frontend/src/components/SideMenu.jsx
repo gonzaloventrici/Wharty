@@ -75,13 +75,13 @@ export default function SideMenu({ isOpen, onClose }) {
 
         {/* Menu items */}
         <div style={{flex:1, padding:'16px 0', display:'flex', flexDirection:'column', gap:'4px'}}>
-          <MenuItem icon="-" label="Mi perfil" to="/profile" onClose={onClose} />
+          <MenuItem icon="" label="Mi perfil" to="/profile" onClose={onClose} />
           {user?.isOrganizer ? (
-            <MenuItem icon="-" label="Mis eventos" to="/my-events" onClose={onClose} />
+            <MenuItem icon="" label="Mis eventos" to="/my-events" onClose={onClose} />
           ) : (
             <>
-              <MenuItem icon="-" label="Mis entradas" to="/my-tickets" onClose={onClose} />
-              <MenuItem icon="-" label="Mis reseñas" to="/my-reviews" onClose={onClose} />
+              <MenuItem icon="" label="Mis entradas" to="/my-tickets" onClose={onClose} />
+              <MenuItem icon="" label="Mis reseñas" to="/my-reviews" onClose={onClose} />
             </>
           )}
         </div>

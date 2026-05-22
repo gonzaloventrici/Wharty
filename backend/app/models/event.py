@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, Float, ForeignKe
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database.connection import Base
+from sqlalchemy import Column, Integer, String, Text, DateTime, Float, ForeignKey, Boolean
 
 class Event(Base):
     __tablename__ = "events"
@@ -17,6 +18,7 @@ class Event(Base):
     organizer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     average_rating = Column(Float, default=0.0)
     created_at = Column(DateTime, default=func.now())
+    is_recurring = Column(Boolean, default=False)
 
     organizer = relationship("User", backref="events")
     tickets = relationship("Ticket", backref="event")

@@ -11,7 +11,7 @@ class ReviewResponse(BaseModel):
     id: int
     event_id: int
     user_id: int
-    ticket_id: int
+    ticket_id: Optional[int] = None
     rating: float
     comment: Optional[str]
     created_at: datetime

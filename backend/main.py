@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database.connection import engine, Base
 from app.models import user, event, ticket, review
 from app.routers import events, tickets, reviews, auth
+from fastapi.staticfiles import StaticFiles
+import os
+from app.models import user, event, ticket, review, event_image
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,3 +31,6 @@ app.include_router(reviews.router, prefix="/reviews", tags=["Reviews"])
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
