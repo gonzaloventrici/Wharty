@@ -1,34 +1,26 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import CheckoutModal from '../components/CheckoutModal'
 import api from '../services/api'
 
 export default function EventDetail() {
   const { id } = useParams()
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [event, setEvent] = useState(null)
   const [images, setImages] = useState([])
   const [reviews, setReviews] = useState([])
   const [form, setForm] = useState({ rating: 5, comment: '' })
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('')
+  const [showCheckout, setShowCheckout] = useState(false)
 
   useEffect(() => {
     api.get(`/events/${id}`).then(res => setEvent(res.data))
     api.get(`/events/${id}/images`).then(res => setImages(res.data))
     api.get(`/reviews/${id}`).then(res => setReviews(res.data))
   }, [id])
-
-  const handleTicket = async () => {
-    try {
-      await api.post('/tickets/', { event_id: parseInt(id), payment_id: 'SIMULADO_' + Date.now() })
-      setSuccess('✅ Entrada comprada correctamente')
-      setError('')
-    } catch {
-      setError('❌ Error al comprar la entrada')
-      setSuccess('')
-    }
-  }
 
   const handleReview = async (e) => {
     e.preventDefault()
@@ -51,6 +43,15 @@ export default function EventDetail() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+
+      {showCheckout && (
+        <CheckoutModal
+          event={event}
+          onClose={() => setShowCheckout(false)}
+          onSuccess={() => {}}
+        />
+      )}
+
       <div className="max-w-3xl mx-auto px-6 py-10">
 
         {/* Info del evento */}
@@ -88,7 +89,9 @@ export default function EventDetail() {
             )}
 
             {user && !eventPassed && !user.isOrganizer && (
-              <button onClick={handleTicket} className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition w-full">
+              <button
+                onClick={() => setShowCheckout(true)}
+                className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition w-full">
                 Comprar entrada
               </button>
             )}
