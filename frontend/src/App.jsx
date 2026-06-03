@@ -10,6 +10,7 @@ import MyTickets from './pages/MyTickets'
 import MyReviews from './pages/MyReviews'
 import MyEvents from './pages/MyEvents'
 import EditEvent from './pages/EditEvent'
+import OrganizerProfile from './pages/OrganizerProfile'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/my-reviews" element={<MyReviews />} />
           <Route path="/my-events" element={<MyEvents />} />
           <Route path="/events/edit/:id" element={<EditEvent />} />
+          <Route path="/organizer/:id" element={<OrganizerProfile />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
