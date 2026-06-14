@@ -57,21 +57,38 @@ export default function FiesteroProfile() {
 
       <div className="max-w-2xl mx-auto px-6 py-10">
 
-        {/* Avatar */}
+       {/* Avatar */}
         <div className="flex flex-col items-center mb-8">
           <div style={{position:'relative', width:'100px', height:'100px', marginBottom:'12px'}}>
             <div style={{width:'100px', height:'100px', borderRadius:'50%', background:'#7c3aed', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'36px', fontWeight:'bold', color:'white', overflow:'hidden', border:'3px solid #7c3aed'}}>
               {profile.avatar_url ? (
                 <img src={`http://127.0.0.1:8000${profile.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
-              ) : 'F'}
+              ) : (
+                (profile.name?.[0] || 'F').toUpperCase()
+              )}
             </div>
             <label style={{position:'absolute', bottom:0, right:0, width:'30px', height:'30px', borderRadius:'50%', background:'#4c1d95', border:'2px solid #1f2937', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'14px'}}>
               ✏️
               <input type="file" accept="image/*" onChange={handleAvatar} style={{display:'none'}} />
             </label>
           </div>
+
+          {profile.avatar_url && (
+            <button
+              onClick={async () => {
+                await api.delete('/auth/me/avatar')
+                setProfile({ ...profile, avatar_url: null })
+                const userData = JSON.parse(localStorage.getItem('user_data') || '{}')
+                localStorage.setItem('user_data', JSON.stringify({ ...userData, avatar_url: null }))
+              }}
+              className="text-red-400 hover:text-red-300 text-xs mb-2 transition">
+              Eliminar foto
+            </button>
+          )}
+
           <h2 className="text-2xl font-bold">{profile.name || 'Mi perfil'}</h2>
           <p className="text-gray-500 text-sm">{profile.email}</p>
+          <span className="bg-purple-900 text-purple-300 text-xs px-3 py-1 rounded-full mt-2 font-semibold">Fiestero</span>
         </div>
 
         {/* Datos */}

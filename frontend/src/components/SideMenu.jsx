@@ -59,20 +59,23 @@ export default function SideMenu({ isOpen, onClose }) {
           </div>
           <div style={{display:'flex', alignItems:'center', gap:'12px'}}>
             <div style={{
-            width:'44px', height:'44px', borderRadius:'50%',
-            background:'#7c3aed', display:'flex', alignItems:'center',
-            justifyContent:'center', color:'white', fontWeight:'bold', fontSize:'18px',
-            overflow:'hidden', flexShrink:0
-          }}>
-            {user?.avatar_url ? (
-              <img src={`http://127.0.0.1:8000${user.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
-            ) : (
-              user?.isOrganizer ? 'O' : 'F'
-            )}
-          </div>
+              width:'44px', height:'44px', borderRadius:'50%',
+              background:'#7c3aed', display:'flex', alignItems:'center',
+              justifyContent:'center', color:'white', fontWeight:'bold', fontSize:'18px',
+              overflow:'hidden', flexShrink:0
+            }}>
+              {user?.avatar_url ? (
+                <img src={`http://127.0.0.1:8000${user.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
+              ) : (
+                (user?.name?.[0] || (user?.isOrganizer ? 'O' : 'F')).toUpperCase()
+              )}
+            </div>
             <div>
               <div style={{color:'white', fontWeight:'600', fontSize:'14px'}}>
-                {user?.isOrganizer ? 'Organizador' : 'Fiestero'}
+                {user?.name || (user?.isOrganizer ? 'Organizador' : 'Fiestero')}
+              </div>
+              <div style={{color:'#a78bfa', fontSize:'11px', fontWeight:'600', marginTop:'2px'}}>
+                {user?.isOrganizer ? 'Cuenta Organizador' : 'Cuenta Fiestero'}
               </div>
             </div>
           </div>

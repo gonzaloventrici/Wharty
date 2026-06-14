@@ -54,9 +54,13 @@ export default function Register() {
     try {
       await api.post('/auth/register', payload)
       navigate('/login')
-    } catch {
-      setError('Error al registrarse, intentá con otro email')
+    } catch (err) {
+    if (err.response?.status === 400) {
+      setError('Ese email ya está registrado. Probá con otro o iniciá sesión.')
+    } else {
+      setError('Error al registrarse, intentá de nuevo.')
     }
+}
   }
 
   return (
