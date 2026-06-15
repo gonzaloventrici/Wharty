@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import SideMenu from '../components/SideMenu'
 import api from '../services/api'
+import BackButton from '../components/BackButton'
 
 export default function MyEvents() {
   const { user } = useAuth()
@@ -42,6 +43,7 @@ export default function MyEvents() {
           </button>
           <h1 className="text-xl font-bold text-purple-400 cursor-pointer" onClick={() => navigate('/events')}>Wharty</h1>
         </div>
+        <BackButton />
       </nav>
 
       <div className="max-w-4xl mx-auto px-6 py-10">

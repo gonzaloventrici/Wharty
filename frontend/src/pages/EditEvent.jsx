@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import SideMenu from '../components/SideMenu'
 import api from '../services/api'
+import BackButton from '../components/BackButton'
 
 const LOCATIONS = {
   'Buenos Aires (CABA)': {
@@ -158,9 +159,12 @@ export default function EditEvent() {
           </button>
           <h1 className="text-xl font-bold text-purple-400 cursor-pointer" onClick={() => navigate('/events')}>Wharty</h1>
         </div>
-        <button onClick={() => navigate('/my-events')} className="text-gray-400 hover:text-white transition text-sm">
-          ← Mis eventos
-        </button>
+        <div className="flex gap-4 items-center">
+          <BackButton />
+          <button onClick={() => navigate('/my-events')} className="text-purple-400 hover:text-purple-300 transition text-sm font-semibold">
+            Mis eventos
+          </button>
+        </div>
       </nav>
 
       <div className="max-w-2xl mx-auto px-6 py-10">

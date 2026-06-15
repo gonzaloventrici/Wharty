@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import SideMenu from '../components/SideMenu'
 import api from '../services/api'
+import BackButton from '../components/BackButton'
 
 export default function OrganizerProfile() {
   const { id } = useParams()
@@ -16,6 +17,7 @@ export default function OrganizerProfile() {
   const [form, setForm] = useState({})
   const [saveSuccess, setSaveSuccess] = useState('')
   const [saveError, setSaveError] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const isOwner = user?.userId === id
 
@@ -52,9 +54,7 @@ export default function OrganizerProfile() {
           )}
           <h1 className="text-xl font-bold text-purple-400 cursor-pointer" onClick={() => navigate('/events')}>Wharty</h1>
         </div>
-        <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-white transition text-sm">
-          ← Volver
-        </button>
+        <BackButton />
       </nav>
 
       <div className="max-w-3xl mx-auto px-6 py-10">
@@ -92,12 +92,7 @@ export default function OrganizerProfile() {
             </div>
             {isOwner && organizer.avatar_url && (
               <button
-                onClick={async () => {
-                  await api.delete('/auth/me/avatar')
-                  setOrganizer({ ...organizer, avatar_url: null })
-                  const userData = JSON.parse(localStorage.getItem('user_data') || '{}')
-                  localStorage.setItem('user_data', JSON.stringify({ ...userData, avatar_url: null }))
-                }}
+                onClick={() => setShowDeleteConfirm(true)}
                 className="text-red-400 hover:text-red-300 text-xs mb-2 transition">
                 Eliminar foto
               </button>
@@ -216,6 +211,32 @@ export default function OrganizerProfile() {
           </div>
         )}
       </div>
+      {showDeleteConfirm && (
+        <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:60}}>
+          <div style={{background:'#111827', borderRadius:'16px', padding:'32px', maxWidth:'340px', width:'100%', margin:'0 16px'}}>
+            <h2 style={{color:'white', fontSize:'18px', fontWeight:'bold', marginBottom:'8px'}}>Eliminar foto</h2>
+            <p style={{color:'#9ca3af', marginBottom:'24px'}}>¿Seguro que querés eliminar tu foto de perfil?</p>
+            <div style={{display:'flex', gap:'12px'}}>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{flex:1, padding:'12px', borderRadius:'8px', border:'1px solid #374151', color:'#d1d5db', background:'transparent', cursor:'pointer'}}>
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  await api.delete('/auth/me/avatar')
+                  setOrganizer({ ...organizer, avatar_url: null })
+                  const userData = JSON.parse(localStorage.getItem('user_data') || '{}')
+                  localStorage.setItem('user_data', JSON.stringify({ ...userData, avatar_url: null }))
+                  setShowDeleteConfirm(false)
+                }}
+                style={{flex:1, padding:'12px', borderRadius:'8px', background:'#dc2626', color:'white', fontWeight:'600', cursor:'pointer', border:'none'}}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

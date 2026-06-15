@@ -164,7 +164,7 @@ export default function Home() {
             <div className="flex-1 relative">
               <input
                 type="text"
-                placeholder="Buscar eventos por nombre..."
+                placeholder="Buscar eventos..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="bg-gray-900 text-white rounded-lg px-4 py-3 pl-10 outline-none w-full border border-gray-800 focus:border-purple-500 transition"

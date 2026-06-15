@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import CheckoutModal from '../components/CheckoutModal'
 import api from '../services/api'
+import BackButton from '../components/BackButton'
+import SideMenu from '../components/SideMenu'
 
 export default function EventDetail() {
   const { id } = useParams()
@@ -18,6 +20,7 @@ export default function EventDetail() {
   const [organizer, setOrganizer] = useState(null)
   const [alreadyReviewed, setAlreadyReviewed] = useState(false)
   const [commentError, setCommentError] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     api.get(`/events/${id}`).then(res => setEvent(res.data))
@@ -68,7 +71,20 @@ export default function EventDetail() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
-
+      <SideMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+      <nav className="bg-gray-900 px-6 py-4 flex justify-between items-center">
+        <div className="flex gap-4 items-center">
+          {user && (
+            <button onClick={() => setMenuOpen(true)} style={{width:'38px', height:'38px', borderRadius:'8px', background:'transparent', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', gap:'5px', padding:'4px'}}>
+              <span style={{display:'block', width:'22px', height:'2px', background:'#a78bfa', borderRadius:'2px'}}></span>
+              <span style={{display:'block', width:'22px', height:'2px', background:'#a78bfa', borderRadius:'2px'}}></span>
+              <span style={{display:'block', width:'22px', height:'2px', background:'#a78bfa', borderRadius:'2px'}}></span>
+            </button>
+          )}
+          <h1 className="text-xl font-bold text-purple-400 cursor-pointer" onClick={() => navigate('/events')}>Wharty</h1>
+        </div>
+        <BackButton />
+      </nav>
       {showCheckout && (
         <CheckoutModal
           event={event}
@@ -115,7 +131,7 @@ export default function EventDetail() {
                 </p>
               </div>
               {user?.userId !== String(event.organizer_id) && (
-                <span className="text-gray-500 text-sm">→</span>
+                <span className="text-gray-500 text-sm"></span>
               )}
             </div>
 
