@@ -1,3 +1,4 @@
+from app.models.ticket import Ticket
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database.connection import get_db
@@ -96,20 +97,30 @@ def upload_avatar(file: UploadFile = File(...), current_user: User = Depends(get
 def get_organizer_profile(user_id: int, db: Session = Depends(get_db)):
     from app.models.event import Event
     from app.models.review import Review
-    
+
     organizer = db.query(User).filter(User.id == user_id, User.is_organizer == True).first()
     if not organizer:
         raise HTTPException(status_code=404, detail="Organizador no encontrado")
-    
+
     events = db.query(Event).filter(Event.organizer_id == user_id).all()
-    
+
     total_reviews = 0
     total_rating = 0
+    all_reviews = []
     for event in events:
         reviews = db.query(Review).filter(Review.event_id == event.id).all()
         total_reviews += len(reviews)
         total_rating += sum(r.rating for r in reviews)
-    
+        for r in reviews:
+            all_reviews.append({
+                "id": r.id,
+                "event_id": r.event_id,
+                "event_title": event.title,
+                "rating": r.rating,
+                "comment": r.comment,
+                "created_at": str(r.created_at)
+            })
+
     avg_rating = round(total_rating / total_reviews, 1) if total_reviews > 0 else 0
 
     return {
@@ -119,7 +130,8 @@ def get_organizer_profile(user_id: int, db: Session = Depends(get_db)):
         "avg_rating": avg_rating,
         "total_reviews": total_reviews,
         "total_events": len(events),
-        "events": [{"id": e.id, "title": e.title, "location": e.location, "date": str(e.date), "price": e.price, "average_rating": e.average_rating, "image_url": e.image_url} for e in events]
+        "events": [{"id": e.id, "title": e.title, "location": e.location, "date": str(e.date), "price": e.price, "average_rating": e.average_rating, "image_url": e.image_url, "capacity": e.capacity, "tickets_sold": db.query(Ticket).filter(Ticket.event_id == e.id).count()} for e in events],
+        "reviews": all_reviews
     }
 
 @router.delete("/me/avatar")

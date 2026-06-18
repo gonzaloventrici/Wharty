@@ -180,36 +180,88 @@ export default function OrganizerProfile() {
           </div>
         )}
 
-        {/* Eventos */}
-        <h3 className="text-xl font-bold mb-4">Eventos</h3>
-        {organizer.events.length === 0 ? (
-          <p className="text-gray-400">Este organizador no tiene eventos publicados.</p>
+        {/* Reseñas */}
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold">Reseñas</h3>
+          {organizer.reviews?.length > 5 && (
+            <button
+              onClick={() => navigate(`/organizer/${id}/reviews`)}
+              className="text-purple-400 hover:text-purple-300 text-sm font-semibold transition">
+              Ver todas ({organizer.reviews.length})
+            </button>
+          )}
+        </div>
+
+        {!organizer.reviews || organizer.reviews.length === 0 ? (
+          <p className="text-gray-400 mb-8">Aún no hay reseñas.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {organizer.events.map(event => (
+          <div className="flex flex-col gap-4">
+            {organizer.reviews.slice(0, 5).map(r => (
               <div
-                key={event.id}
-                onClick={() => navigate(`/events/${event.id}`)}
-                className="bg-gray-900 rounded-2xl overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500 transition">
-                <div className="h-36 bg-gray-800 overflow-hidden flex items-center justify-center">
-                  {eventImages[event.id] ? (
-                    <img src={`http://127.0.0.1:8000${eventImages[event.id]}`} alt={event.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-3xl text-gray-600">📷</span>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h4 className="font-semibold text-white mb-1">{event.title}</h4>
-                  <p className="text-gray-400 text-sm">{event.location}</p>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-purple-400 font-bold text-sm">${event.price.toLocaleString()}</span>
-                    <span className="text-yellow-400 text-sm">⭐ {event.average_rating.toFixed(1)}</span>
+                key={r.id}
+                className="bg-gray-900 rounded-2xl p-6 cursor-pointer hover:ring-2 hover:ring-purple-500 transition"
+                onClick={() => navigate(`/events/${r.event_id}`)}>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <p className="text-purple-400 text-sm font-semibold mb-1">{r.event_title}</p>
+                    <span className="text-yellow-400">{'⭐'.repeat(Math.round(r.rating))}</span>
                   </div>
+                  <span className="text-gray-500 text-xs">{new Date(r.created_at).toLocaleDateString('es-AR')}</span>
                 </div>
+                <p className="text-gray-300 mt-2">{r.comment}</p>
               </div>
             ))}
           </div>
         )}
+
+        {/* Eventos */}
+        <div className="flex justify-between items-center mb-4 mt-4">
+          <h3 className="text-xl font-bold">Eventos</h3>
+          {organizer.events.length > 5 && (
+            <button
+              onClick={() => navigate(`/organizer/${id}/events`)}
+              className="text-purple-400 hover:text-purple-300 text-sm font-semibold transition">
+              Ver todos ({organizer.events.length})
+            </button>
+          )}
+        </div>
+
+        {(() => {
+          const now = new Date()
+          const upcoming = organizer.events.filter(e => new Date(e.date) >= now).slice(0, 5)
+          const past = organizer.events.filter(e => new Date(e.date) < now).slice(0, 5 - upcoming.length)
+          const shown = [...upcoming, ...past].slice(0, 5)
+
+          return organizer.events.length === 0 ? (
+            <p className="text-gray-400 mb-8">Este organizador no tiene eventos publicados.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+              {shown.map(event => (
+                <div
+                  key={event.id}
+                  onClick={() => navigate(`/events/${event.id}`)}
+                  className="bg-gray-900 rounded-2xl overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500 transition">
+                  <div className="h-36 bg-gray-800 overflow-hidden flex items-center justify-center">
+                    {eventImages[event.id] ? (
+                      <img src={`http://127.0.0.1:8000${eventImages[event.id]}`} alt={event.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-3xl text-gray-600">📷</span>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-semibold text-white mb-1">{event.title}</h4>
+                    <p className="text-gray-400 text-sm">{event.location}</p>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-purple-400 font-bold text-sm">${event.price.toLocaleString()}</span>
+                      <span className="text-yellow-400 text-sm">⭐ {event.average_rating.toFixed(1)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        })()}
+
       </div>
       {showDeleteConfirm && (
         <div style={{position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:60}}>

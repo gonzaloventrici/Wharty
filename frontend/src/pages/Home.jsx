@@ -37,6 +37,22 @@ const LOCATIONS = {
   'Tucumán': { type: 'ciudades', items: ['San Miguel de Tucumán','Tafí Viejo','Banda del Río Salí','Yerba Buena','Concepción'] }
 }
 
+function EventCardSkeleton() {
+  return (
+    <div className="bg-gray-900 rounded-2xl overflow-hidden animate-pulse">
+      <div className="bg-gray-800 h-40"></div>
+      <div className="p-5">
+        <div className="h-5 bg-gray-800 rounded w-3/4 mb-2"></div>
+        <div className="h-4 bg-gray-800 rounded w-1/2 mb-3"></div>
+        <div className="flex justify-between items-center">
+          <div className="h-4 bg-gray-800 rounded w-1/4"></div>
+          <div className="h-4 bg-gray-800 rounded w-1/6"></div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventCard({ event }) {
   const [primaryImage, setPrimaryImage] = useState(null)
 
@@ -88,23 +104,27 @@ export default function Home() {
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [sortBy, setSortBy] = useState('recent')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/events/').then(res => setEvents(res.data))
+    api.get('/events/').then(res => {
+      setEvents(res.data)
+      setLoading(false)
+    })
   }, [])
 
   const activeFiltersCount = [provincia, localidad, dateFrom, dateTo].filter(Boolean).length
     + (minPrice && parseFloat(minPrice) > 0 ? 1 : 0)
     + (maxPrice && parseFloat(maxPrice) > 0 ? 1 : 0)
-    
+
   const clearFilters = () => {
-  setProvincia('')
-  setLocalidad('')
-  setMinPrice('')
-  setMaxPrice('')
-  setDateFrom('')
-  setDateTo('')
-  setSortBy('recent')
+    setProvincia('')
+    setLocalidad('')
+    setMinPrice('')
+    setMaxPrice('')
+    setDateFrom('')
+    setDateTo('')
+    setSortBy('recent')
   }
 
   let filteredEvents = events.filter(event => {
@@ -287,7 +307,11 @@ export default function Home() {
           )}
         </div>
 
-        {filteredEvents.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => <EventCardSkeleton key={i} />)}
+          </div>
+        ) : filteredEvents.length === 0 ? (
           <p className="text-gray-400">
             {events.length === 0 ? 'No hay eventos disponibles por ahora.' : 'No se encontraron eventos con esos filtros.'}
           </p>

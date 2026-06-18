@@ -114,6 +114,11 @@ export default function EventDetail() {
               <div><span className="text-gray-500">Precio</span><p className="text-purple-400 font-bold">${event.price.toLocaleString()}</p></div>
               <div><span className="text-gray-500">Rating</span><p className="text-yellow-400">⭐ {event.average_rating.toFixed(1)}</p></div>
             </div>
+            {event.tickets_sold >= event.capacity && !eventPassed && (
+              <div className="bg-red-900/30 border border-red-800 text-red-300 text-sm rounded-lg px-4 py-2 mb-6 text-center font-semibold">
+                Entradas agotadas
+              </div>
+            )}
 
             {/* Organizador */}
             <div
@@ -148,17 +153,32 @@ export default function EventDetail() {
               </div>
             )}
 
-            {user && !eventPassed && !user.isOrganizer && (
-              <button
-                onClick={() => setShowCheckout(true)}
-                className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition w-full">
-                Comprar entrada
-              </button>
-            )}
+            {(() => {
+              const soldOut = event.tickets_sold >= event.capacity
 
-            {eventPassed && (
-              <p className="text-gray-500 text-sm text-center">Este evento ya ocurrió</p>
-            )}
+              if (eventPassed) {
+                return <p className="text-gray-500 text-sm text-center">Este evento ya ocurrió</p>
+              }
+
+              if (user && !user.isOrganizer) {
+                if (soldOut) {
+                  return (
+                    <button disabled className="bg-gray-800 text-gray-500 px-6 py-3 rounded-lg font-semibold w-full cursor-not-allowed">
+                      Agotado
+                    </button>
+                  )
+                }
+                return (
+                  <button
+                    onClick={() => setShowCheckout(true)}
+                    className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition w-full">
+                    Comprar entrada
+                  </button>
+                )
+              }
+
+              return null
+            })()}
 
             {success && <p className="mt-3 text-center text-sm text-green-400">{success}</p>}
             {error && <p className="mt-3 text-center text-sm text-red-400">{error}</p>}
