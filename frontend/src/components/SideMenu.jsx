@@ -99,7 +99,7 @@ export default function SideMenu({ isOpen, onClose }) {
             <MenuItem icon="" label="Mis eventos" to="/my-events" onClose={onClose} />
           ) : (
             <>
-              <MenuItem icon="" label="Mis entradas" to="/my-tickets" onClose={onClose} />
+              <MenuItem icon="" label="Mis reservas" to="/my-tickets" onClose={onClose} />
               <MenuItem icon="" label="Mis reseñas" to="/my-reviews" onClose={onClose} />
             </>
           )}

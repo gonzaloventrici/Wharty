@@ -172,7 +172,7 @@ export default function EventDetail() {
                   <button
                     onClick={() => setShowCheckout(true)}
                     className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition w-full">
-                    Comprar entrada
+                    Reservar entrada
                   </button>
                 )
               }

@@ -38,11 +38,11 @@ export default function MyTickets() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-6 py-10">
-        <h2 className="text-3xl font-bold mb-8">Mis entradas</h2>
+        <h2 className="text-3xl font-bold mb-8">Mis reservas</h2>
 
         {tickets.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-lg mb-4">Todavía no compraste ninguna entrada</p>
+            <p className="text-gray-400 text-lg mb-4">Todavía no reservaste ninguna entrada</p>
             <button onClick={() => navigate('/events')}
               className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition font-semibold">
               Explorar eventos
