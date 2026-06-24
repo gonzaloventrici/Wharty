@@ -38,11 +38,11 @@ export default function MyTickets() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-6 py-10">
-        <h2 className="text-3xl font-bold mb-8">Mis entradas</h2>
+        <h2 className="text-3xl font-bold mb-8">Mis reservas</h2>
 
         {tickets.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-lg mb-4">Todavía no compraste ninguna entrada</p>
+            <p className="text-gray-400 text-lg mb-4">Todavía no reservaste ninguna entrada</p>
             <button onClick={() => navigate('/events')}
               className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition font-semibold">
               Explorar eventos
@@ -82,7 +82,7 @@ function TicketCard({ ticket, navigate }) {
       className="bg-gray-900 rounded-2xl overflow-hidden flex cursor-pointer hover:ring-2 hover:ring-purple-500 transition">
       <div className="w-24 h-24 bg-gray-800 flex-shrink-0 overflow-hidden">
         {primaryImage ? (
-          <img src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${primaryImage.url}`} alt={event.title} className="w-full h-full object-cover" />
+          <img src={`http://127.0.0.1:8000${primaryImage.url}`} alt={event.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-2xl text-gray-600">🎟️</div>
         )}

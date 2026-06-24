@@ -62,7 +62,7 @@ export default function EventDetail() {
       }
       setSuccess('')
     }
-}
+  }
 
   if (!event) return <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">Cargando...</div>
 
@@ -99,7 +99,7 @@ export default function EventDetail() {
           {primaryImage && (
             <div className="h-56 overflow-hidden">
               <img
-                src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${primaryImage.url}`}
+                src={`http://127.0.0.1:8000${primaryImage.url}`}
                 alt={event.title}
                 className="w-full h-full object-cover"
               />
@@ -126,7 +126,7 @@ export default function EventDetail() {
               className={`flex items-center gap-3 bg-gray-800 rounded-xl p-4 mb-6 ${user?.userId === String(event.organizer_id) ? 'cursor-default' : 'cursor-pointer hover:bg-gray-700 transition'}`}>
               <div style={{width:'40px', height:'40px', borderRadius:'50%', background:'#7c3aed', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'16px', fontWeight:'bold', color:'white', overflow:'hidden', flexShrink:0}}>
                 {organizer?.avatar_url ? (
-                  <img src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${organizer.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
+                  <img src={`http://127.0.0.1:8000${organizer.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
                 ) : 'O'}
               </div>
               <div className="flex-1">
@@ -145,7 +145,7 @@ export default function EventDetail() {
                 {images.map(img => (
                   <img
                     key={img.id}
-                    src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${img.url}`}
+                    src={`http://127.0.0.1:8000${img.url}`}
                     alt="evento"
                     className={`h-16 w-24 object-cover rounded-lg flex-shrink-0 ${img.is_primary ? 'ring-2 ring-purple-500' : 'opacity-70'}`}
                   />
@@ -172,7 +172,7 @@ export default function EventDetail() {
                   <button
                     onClick={() => setShowCheckout(true)}
                     className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg font-semibold transition w-full">
-                    Comprar entrada
+                    Reservar entrada
                   </button>
                 )
               }
