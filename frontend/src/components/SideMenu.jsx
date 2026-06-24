@@ -67,7 +67,7 @@ export default function SideMenu({ isOpen, onClose }) {
                 overflow:'hidden', flexShrink:0
               }}>
                 {user?.avatar_url ? (
-                  <img src={`http://127.0.0.1:8000${user.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
+                  <img src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${user.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
                 ) : (
                   (user?.name?.[0] || (user?.isOrganizer ? 'O' : 'F')).toUpperCase()
                 )}

@@ -80,7 +80,7 @@ function EventCard({ event }) {
         <div className="bg-gray-800 h-40 flex items-center justify-center overflow-hidden relative">
           {primaryImage ? (
             <img
-              src={`http://127.0.0.1:8000${primaryImage.url}`}
+              src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${primaryImage.url}`}
               alt={event.title}
               className="w-full h-full object-cover"
             />

@@ -64,7 +64,7 @@ export default function OrganizerProfile() {
           <div style={{position:'relative', width:'80px', height:'80px', flexShrink:0}}>
             <div style={{width:'80px', height:'80px', borderRadius:'50%', background:'#7c3aed', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'28px', fontWeight:'bold', color:'white', overflow:'hidden'}}>
               {organizer.avatar_url ? (
-                <img src={`http://127.0.0.1:8000${organizer.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
+                <img src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${organizer.avatar_url}`} alt="avatar" style={{width:'100%', height:'100%', objectFit:'cover'}} />
               ) : (
                 (organizer.producer_name?.[0] || 'O').toUpperCase()
               )}
@@ -252,7 +252,7 @@ export default function OrganizerProfile() {
                   className="bg-gray-900 rounded-2xl overflow-hidden cursor-pointer hover:ring-2 hover:ring-purple-500 transition">
                   <div className="h-36 bg-gray-800 overflow-hidden flex items-center justify-center">
                     {eventImages[event.id] ? (
-                      <img src={`http://127.0.0.1:8000${eventImages[event.id]}`} alt={event.title} className="w-full h-full object-cover" />
+                      <img src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${eventImages[event.id]}`} alt={event.title} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-3xl text-gray-600">📷</span>
                     )}

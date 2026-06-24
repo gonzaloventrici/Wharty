@@ -181,7 +181,7 @@ export default function EditEvent() {
               {images.map(img => (
                 <div key={img.id} className="relative rounded-xl overflow-hidden">
                   <img
-                    src={`http://127.0.0.1:8000${img.url}`}
+                    src={`${import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"}${img.url}`}
                     alt="evento"
                     className="w-full h-24 object-cover"
                   />
