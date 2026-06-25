@@ -1,3 +1,4 @@
+import { getImageUrl } from '../utils/imageHelper';
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -82,7 +83,7 @@ export default function Profile() {
           <div style={{position:'relative', width:'100px', height:'100px', marginBottom:'12px'}}>
             {profile.avatar_url ? (
               <img
-                src={{getImageUrl(profile.avatar_url)}}
+                src={getImageUrl(profile.avatar_url)}
                 alt="avatar"
                 style={{width:'100px', height:'100px', borderRadius:'50%', objectFit:'cover', border:'3px solid #7c3aed'}}
               />

@@ -1,3 +1,4 @@
+import { getImageUrl } from '../utils/imageHelper';
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -80,7 +81,7 @@ function ReviewCard({ review, navigate }) {
       className="bg-gray-900 rounded-2xl overflow-hidden flex cursor-pointer hover:ring-2 hover:ring-purple-500 transition">
       <div className="w-24 h-24 bg-gray-800 flex-shrink-0 overflow-hidden">
         {primaryImage ? (
-          <img src={{getImageUrl(primaryImage.url)}} alt={event.title} className="w-full h-full object-cover" />
+          <img src={getImageUrl(primaryImage.url)} alt={event.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-2xl text-gray-600">⭐</div>
         )}
