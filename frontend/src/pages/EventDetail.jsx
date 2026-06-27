@@ -111,17 +111,18 @@ export default function EventDetail() {
             <div className="grid grid-cols-2 gap-4 text-sm mb-6">
               <div><span className="text-gray-500">Ubicación</span><p>{event.location}</p></div>
               <div>
-                <span className="text-gray-500">Fecha y Hora</span>
-                <p>
-                  {new Date(event.date).toLocaleDateString('es-AR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })} hs
-                </p>
-              </div>
+                <span className="text-gray-500">Fecha y Hora</span>
+                <p>
+                  {new Date(event.date).toLocaleDateString('es-AR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false // <-- Esto saca el a. m. / p. m.
+                  })} hs
+                </p>
+              </div>
               <div><span className="text-gray-500">Precio</span><p className="text-purple-400 font-bold">${event.price.toLocaleString()}</p></div>
               <div><span className="text-gray-500">Rating</span><p className="text-yellow-400">⭐ {event.average_rating.toFixed(1)}</p></div>
             </div>
