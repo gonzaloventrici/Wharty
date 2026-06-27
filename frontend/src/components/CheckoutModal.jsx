@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom' // <-- 1. Importamos useNavigate
 import api from '../services/api'
 
 export default function CheckoutModal({ event, onClose, onSuccess }) {
+  const navigate = useNavigate() // <-- 2. Inicializamos el hook
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [ticket, setTicket] = useState(null)
@@ -24,6 +26,12 @@ export default function CheckoutModal({ event, onClose, onSuccess }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  // 3. Creamos una función para manejar el cierre definitivo e ir a mis entradas
+  const handleGoToTickets = () => {
+    onClose()
+    navigate('/my-tickets') // <-- Cambiá esta ruta si tu componente de entradas usa otra (ej: /my-events o /tickets)
   }
 
   return (
@@ -96,8 +104,9 @@ export default function CheckoutModal({ event, onClose, onSuccess }) {
                 <p style={{color:'#9ca3af', fontSize:'13px'}}>{new Date(event.date).toLocaleDateString('es-AR', {weekday:'long', day:'numeric', month:'long'})}</p>
               </div>
 
+              {/* 4. Cambiamos el onClick para usar la nueva función */}
               <button
-                onClick={onClose}
+                onClick={handleGoToTickets}
                 style={{width:'100%', padding:'14px', borderRadius:'12px', background:'#7c3aed', border:'none', color:'white', fontWeight:'700', fontSize:'16px', cursor:'pointer'}}>
                 Ver mis entradas
               </button>
