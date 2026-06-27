@@ -42,14 +42,14 @@ export default function CheckoutModal({ event, onClose, onSuccess }) {
           <>
             {/* Header */}
             <div style={{background:'#1f2937', padding:'20px 24px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-              <h2 style={{color:'white', fontWeight:'700', fontSize:'18px'}}>Confirmar compra</h2>
+              <h2 style={{color:'white', fontWeight:'700', fontSize:'18px'}}>Reservar entrada</h2>
               <button onClick={onClose} style={{background:'none', border:'none', color:'#6b7280', cursor:'pointer', fontSize:'20px'}}>✕</button>
             </div>
 
             {/* Evento */}
             <div style={{padding:'24px'}}>
               <div style={{background:'#1f2937', borderRadius:'12px', padding:'16px', marginBottom:'20px'}}>
-                <p style={{color:'#9ca3af', fontSize:'12px', marginBottom:'4px'}}>EVENTO</p>
+                <p style={{color:'#9ca3af', fontSize:'12px', marginBottom:'4px'}}>Evento</p>
                 <h3 style={{color:'white', fontWeight:'600', fontSize:'16px', marginBottom:'4px'}}>{event.title}</h3>
                 <p style={{color:'#9ca3af', fontSize:'13px'}}>{event.location}</p>
                 <p style={{color:'#9ca3af', fontSize:'13px'}}>{new Date(event.date).toLocaleDateString('es-AR', {weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit'})}</p>
@@ -77,7 +77,7 @@ export default function CheckoutModal({ event, onClose, onSuccess }) {
                 onClick={handleConfirm}
                 disabled={loading}
                 style={{width:'100%', padding:'14px', borderRadius:'12px', background: loading ? '#4c1d95' : '#7c3aed', border:'none', color:'white', fontWeight:'700', fontSize:'16px', cursor: loading ? 'not-allowed' : 'pointer', transition:'background 0.2s'}}>
-                {loading ? 'Procesando...' : 'Confirmar compra'}
+                {loading ? 'Procesando...' : 'Reservar entrada'}
               </button>
 
               <p style={{color:'#6b7280', fontSize:'11px', textAlign:'center', marginTop:'12px'}}>
@@ -92,8 +92,8 @@ export default function CheckoutModal({ event, onClose, onSuccess }) {
               <div style={{width:'64px', height:'64px', borderRadius:'50%', background:'#064e3b', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px', fontSize:'28px'}}>
                 ✅
               </div>
-              <h2 style={{color:'white', fontWeight:'700', fontSize:'22px', marginBottom:'8px'}}>¡Compra exitosa!</h2>
-              <p style={{color:'#9ca3af', fontSize:'14px', marginBottom:'24px'}}>Tu entrada fue confirmada</p>
+              <h2 style={{color:'white', fontWeight:'700', fontSize:'22px', marginBottom:'8px'}}>¡Reserva exitosa!</h2>
+              <p style={{color:'#9ca3af', fontSize:'14px', marginBottom:'24px'}}>Tu reserva fue confirmada</p>
 
               <div style={{background:'#1f2937', borderRadius:'16px', padding:'20px', marginBottom:'24px'}}>
                 <p style={{color:'#9ca3af', fontSize:'11px', marginBottom:'8px', letterSpacing:'0.1em'}}>CÓDIGO DE ENTRADA</p>
@@ -108,7 +108,7 @@ export default function CheckoutModal({ event, onClose, onSuccess }) {
               <button
                 onClick={handleGoToTickets}
                 style={{width:'100%', padding:'14px', borderRadius:'12px', background:'#7c3aed', border:'none', color:'white', fontWeight:'700', fontSize:'16px', cursor:'pointer'}}>
-                Ver mis entradas
+                Ver mis reservas
               </button>
             </div>
           </>
