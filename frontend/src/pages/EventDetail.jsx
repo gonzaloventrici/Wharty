@@ -89,7 +89,10 @@ export default function EventDetail() {
         <CheckoutModal
           event={event}
           onClose={() => setShowCheckout(false)}
-          onSuccess={() => {}}
+          onSuccess={() => {
+            // Volvemos a pedir el evento para actualizar los tickets vendidos en tiempo real
+            api.get(`/events/${id}`).then(res => setEvent(res.data)).catch(() => {})
+          }}
         />
       )}
 
@@ -110,7 +113,12 @@ export default function EventDetail() {
             <p className="text-gray-400 mb-4">{event.description}</p>
             <div className="grid grid-cols-2 gap-4 text-sm mb-6">
               <div><span className="text-gray-500">Ubicación</span><p>{event.location}</p></div>
-              <div><span className="text-gray-500">Fecha</span><p>{new Date(event.date).toLocaleDateString()}</p></div>
+              <div>
+                <span className="text-gray-500">Fecha y Hora</span>
+                <p>
+                  {new Date(event.date).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })} - {new Date(event.date).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs
+                </p>
+              </div>
               <div><span className="text-gray-500">Precio</span><p className="text-purple-400 font-bold">${event.price.toLocaleString()}</p></div>
               <div><span className="text-gray-500">Rating</span><p className="text-yellow-400">⭐ {event.average_rating.toFixed(1)}</p></div>
             </div>
@@ -191,7 +199,7 @@ export default function EventDetail() {
           {reviews.length === 0 ? (
             <p className="text-gray-400">Todavía no hay reseñas.</p>
           ) : (
-            reviews.map(r => (
+            <reviews.map(r => (
               <div key={r.id} className="border-b border-gray-800 py-4">
                 <div className="flex justify-between mb-1">
                   <div>
